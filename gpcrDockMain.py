@@ -1,29 +1,49 @@
-#from util.Glide import *
+from pipeline import *
 from argparse import ArgumentParser
 import ntpath
+import os
+from main import *
 
+
+#python gpcrDockMain.py -ligand /home/t701033/data/docking/test/input/5HT2B_1106_0001_ligand.pdb -receptor /home/t701033/data/docking/test/input/5HT2B_1106_0001_receptor.pdb -outDirectory /home/t701033/data/docking/test -mode Glide
 
 argparser = ArgumentParser()
 
 argparser.add_argument("-ligand", dest = "l", nargs = "*", help = "ligand_address", type = str)
 argparser.add_argument("-receptor", dest = "r", nargs = "*", help = "receptor_address", type = str)
 argparser.add_argument("-complexname", dest = "n", nargs = "*", help = "complex_name", type = str)
-argparser.add_argument('-mode', choices=['Gold', 'Glide'])
+argparser.add_argument("-outDirectory", dest = "o", nargs = "*", help = "complex_name", type = str)
+argparser.add_argument('-mode', dest = "mode", choices=['Gold', 'Glide','all'])
 
 
 args = argparser.parse_args()
 
-if args.l[0]:
+if args.l:
 	ligand_address =args.l[0]
 else:
-	raise "Enter a ligand address"
-receptor_address=args.r[0]
+	raise IOError("Enter a ligand address")
+
+if args.r:
+	receptor_address=args.r[0]
+else:
+	raise IOError("Enter a receptor address")
+
+
+if args.o:
+	ouput_dir=args.o[0]
+else:
+	raise IOError("Enter an output location")
+
 
 if not os.path.exists(ligand_address):
-   raise "Couldn't locate the ligand file"
+   raise IOError("Couldn't locate the ligand file")
 
 if not os.path.exists(receptor_address):
-   raise "Couldn't locate the receptor file"
+   raise IOError("Couldn't locate the receptor file")
+
+if not os.path.exists(ouput_dir):
+   print "making directory", ouput_dir
+   os.mkdir(ouput_dir)
 
 if args.n:
     complexname=args.n[0]
@@ -31,6 +51,10 @@ else:
     complexname=ntpath.basename(receptor_address).split('.')[0]
 
 
-if args(['Glide']):
-	print Glide
+#print args.mode
+	#print Glide
 	#model=SideChain_Torsion_Calculator(model_decoy_address)
+
+#EC_ADD, LIG_ADD, COMPLEXNAME, OUTDIR, MODE)
+main(receptor_address,ligand_address,complexname,ouput_dir,args.mode).Run_Dock()
+
