@@ -4,8 +4,10 @@ from abc import ABCMeta, abstractmethod
 
 class IInterfaceRecPrep(object):
     __metaclass__ = ABCMeta
-    print "in IInterfaceRecPrep"
-
+    #print "in IInterfaceRecPrep"
+    @abstractmethod
+    def Process(self):
+	raise NotImplementedError
 
     @abstractmethod
     def ArrangeRecInputFormat(self):

@@ -24,6 +24,7 @@ class GridDetector():
 	coor_list = [a.get_coord() for a in atoms]
 	coor_array = np.array(coor_list)
         gridPoint = [float(sum(l))/len(l) for l in zip(*coor_array)]
-	gridPoints.append(gridPoint)
+	str_gridpoint = [str(x) for x in gridPoint]
+	gridPoints.append(str_gridpoint)
 	
 	return gridPoints

@@ -4,6 +4,10 @@ class IInterfaceLigPrep(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
+    def Process(self):
+	raise NotImplementedError
+
+    @abstractmethod
     def ArrangeLigInputFormat(self):
 	raise NotImplementedError
 
