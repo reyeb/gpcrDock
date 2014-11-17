@@ -1,9 +1,16 @@
 from abc import ABCMeta, abstractmethod
 
-class IInterfaceB(object):
+class IInterfaceLigPrep(object):
     __metaclass__ = ABCMeta
+
     @abstractmethod
-    def prepareLigand(self):
+    def ArrangeLigInputFormat(self):
 	raise NotImplementedError
+
+    @abstractmethod
+    def PrepareLig(self):
+	raise NotImplementedError
+
+
     #@abstractmethod
     #def prepareLigand(self): raise NotImplementedError

@@ -48,7 +48,7 @@ if not os.path.exists(ouput_dir):
 if args.n:
     complexname=args.n[0]
 else:
-    complexname=ntpath.basename(receptor_address).split('.')[0]
+    complexname=ntpath.basename(receptor_address).split('_receptor.')[0]
 
 
 #print args.mode

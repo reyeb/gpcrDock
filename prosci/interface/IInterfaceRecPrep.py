@@ -4,19 +4,17 @@ from abc import ABCMeta, abstractmethod
 
 class IInterfaceRecPrep(object):
     __metaclass__ = ABCMeta
+    print "in IInterfaceRecPrep"
+
 
     @abstractmethod
-    def ArrangeInputFormat(self):
+    def ArrangeRecInputFormat(self):
 	raise NotImplementedError
 
     @abstractmethod
-    def Prepare(self):
+    def PrepareRec(self):
 	raise NotImplementedError
 
-##If you define as asbstract u hav to implement it in the main classes if u dion't want to do so just remove @abstractmethod and override it later
-    #@abstractmethod
-    def BuildGrid(self):
-	print "building grid"
-	#raise NotImplementedError
+
 
     
