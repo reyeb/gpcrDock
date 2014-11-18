@@ -2,7 +2,8 @@ from pipeline import *
 from prosci.method.GlideRecPrep import *
 from prosci.method.GridDetector import *
 from prosci.method.GlideLigPrep import *
-
+from prosci.method.GlideDock import *
+from prosci.method.DockParams import DockParams
 
 
 #Pipeline(GlideRecPrep(),GlideligPrep()).RunPipeline()
@@ -30,12 +31,13 @@ class main():
 	if run_mode ==1 or self.mode == "Glide":
 		#prepare output dir. build here since lig and rest will need it
 		glideoutDir = FileManager().BuildDirectory(self.out_Dir,["Glide",self.complex_Name])
-		glideRecPrepInstance=GlideRecPrep(self.rec_Add,self.lig_Add, glideoutDir,self.gridPoints)
-		glideLigPrepInstance=GlideLigPrep(self.lig_Add,glideoutDir)
-		Pipeline(glideRecPrepInstance,glideLigPrepInstance).RunPipeline()
+		glideRecPrepInstance = GlideRecPrep(self.rec_Add,self.lig_Add, glideoutDir,self.gridPoints)
+		glideLigPrepInstance = GlideLigPrep(self.lig_Add,glideoutDir)
+		glideDockInstance = GlideDock()
+		Pipeline(glideRecPrepInstance, glideLigPrepInstance, glideDockInstance).RunPipeline()
 		#Pipeline(glideRecPrepInstance).RunPipeline()
 
-	#if run_mode ==1 or self.mode == "Gold":
-		#Pipeline(GoldRecPrep()).RunPipeline()
+	if run_mode ==1 or self.mode == "Gold":
+		Pipeline(GoldRecPrep()).RunPipeline()
 
 

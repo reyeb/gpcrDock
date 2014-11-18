@@ -5,6 +5,7 @@ from prosci.util.cd import *
 
 import os
 
+from prosci.method.DockParams import DockParams
 
 class GlideLigPrep(IInterfaceLigPrep):
 
@@ -14,9 +15,6 @@ class GlideLigPrep(IInterfaceLigPrep):
 	self.lig_Add = LIG_ADD
 	self.ouPutDir =OUTDIR
 	self.Program_path = Command().Get_program_path("maestro").replace("maestro","")
-
-	self.preparedLigAdd = ""
-
 
     def Process(self):
 	
@@ -49,4 +47,4 @@ class GlideLigPrep(IInterfaceLigPrep):
 		arguments=[mainExecutablePath,"-WAIT -W e,-ph,7.0,-pht,2.0 -epik -i 1 -r 1 -nz -bff 14 -ac",  "-imae", ligmaeFormat, "-omae", outputLigName]
 		#Command().Process_Command(arguments," ", "Preparing Ligand input.")
 		FileManager().Delete_unwanted_dirs_basedon_Extention (fileExtention_to_keep = "_Prep.mae" , mainDir =self.ouPutDir )
-	self.prepareLigAdd = outputFile
+	DockParams.glideLigAdd = outputFile

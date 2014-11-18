@@ -12,7 +12,9 @@ class Command():
 	output = ""; errors = ""
   	try:
 		print information_msg
+		
 		commandLine =concatenator.join(argumentsList)
+		print commandLine
 		p = subprocess.Popen(shlex.split(commandLine), stdout=subprocess.PIPE)
 		output, errors = p.communicate()
 		
