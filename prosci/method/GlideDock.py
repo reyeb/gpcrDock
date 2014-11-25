@@ -9,7 +9,7 @@ class GlideDock(IInterfaceDock):
 
     #def __init__(self, LIG_ADD= None, GRID_Files_List = None):
     def __init__(self):
-	print "here"
+	
 	#self.dockPrecision = "XP"
 	#self.lig_Add = LIG_ADD
 	#self.ouPutDir =OUTDIR
@@ -47,7 +47,9 @@ PRECISION {2}"""
 		with open (dockNameFile+".in", "a") as f:
 			f.write(cur_dockcommand)
 		arguments=[mainExecutablePath,"-WAIT","-NJOBS 10",  dockNameFile+".in"]
-		Command().Process_Command(arguments," ","Glid Dock using "+ dockPrecision + str(index))
+		#uncommnet to run
+		#Command().Process_Command(arguments," ","Glid Dock using "+ dockPrecision + str(index))
+###******FYI
 		#self.Sort( dockNameFile+"_pv.maegz",dockNameFile+ "_sorted.mae",msg = "...sorting "+dockNameFile)
 		#self.Gnerate_individual_poses(dockNameFile+ "_sorted.mae",dockNameFile+ "_sorted.pdb", msg = "splitting docked poses")
 	
@@ -55,9 +57,13 @@ PRECISION {2}"""
 	#"""to re_score using another function""""
     	#print "to do" e.g  
 	#$SCHRODINGER/utilities/glide_rescore [options] pv-or-lib-files
+###******FYI
+
+
 
     def Sort(self,unsorted_dock_poses, sorted_ouput_dock_poses, msg):
 	"""to sort the docked poses. sort.rept file contains the dock poses"""
+###******FYI
 	#$SCHRODINGER/utilities/glide_sort -r sort.rept dock_XP_pv.maegz -o dock_sorted.mae
 	#$SCHRODINGER/utilities/glide_sort -r sort.rept dock_XP_pv.maegz -o dock_sorted.mae 
 	#soty by as specific function: $SCHRODINGER/utilities/glide_sort -use_gscore dock_XP_pv.maegz
@@ -65,15 +71,20 @@ PRECISION {2}"""
 	#norecep: dont include receptor structure in output file
 	# if u wanna sort based on other functuions:  -use_cvdw
 	# another way try do so if several re-ranking... just split the unsorted_dock_poses and then generate several sort file and then correlate the rank list to the pdb file number generated
+###******FYI
 	mainExecutablePath = os.path.join(self.Program_path,"utilities/glide_sort")
 	arguments=[mainExecutablePath,"-WAIT","-r","sort.rept",unsorted_dock_poses,"-o", sorted_ouput_dock_poses]
-	Command().Process_Command(arguments," ",msg)
+	#uncommnet to run
+	#Command().Process_Command(arguments," ",msg)
 
     def Gnerate_individual_poses(self, sorted_dock_poses, dock_poses_pdb, msg):
 	# $SCHRODINGER/utilities/pdbconvert -imae dock1_SP_sorted.mae -opdb dock1_SP_sorted.pdb
 	mainExecutablePath = os.path.join(self.Program_path,"utilities/pdbconvert")
 	arguments=[mainExecutablePath,"-WAIT","-imae", sorted_dock_poses,"-opdb", dock_poses_pdb]
-	Command().Process_Command(arguments," ",msg)
+	#uncommnet to run
+	#Command().Process_Command(arguments," ",msg)
+	
+###******FYI
 	# the outpu is a several files named dock1_SP_sorted-n.pdb where n==1 is the receptor and n>1 are all the modelled ligands. The numbering is based on the best model has a n=2.
 
 

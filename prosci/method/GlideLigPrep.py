@@ -19,6 +19,7 @@ class GlideLigPrep(IInterfaceLigPrep):
     def Process(self):
 	
 	try:
+		print "prepare ligand"
 		#if not self.lig_Add.endswith("mae"):
 		formated_ligand = self.ArrangeLigInputFormat()
 		self.PrepareLig(formated_ligand)

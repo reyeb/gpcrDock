@@ -4,6 +4,8 @@
 """This class holds all the necessary properties required to perform docking. The reason for theis class is that instead of passing differenet parameter for different methods to Docking class we just pass this list of parameters and then reterive what we want."""
 
 class MetaDockParams(type):
+
+#######Glide Parameters
     _glideLigAdd = None
     _glideRecAdd = None
     _glidegridZipAdds = None
@@ -33,6 +35,35 @@ class MetaDockParams(type):
     glideRecAdd = property(_get_glideRecAdd, _set_glideRecAdd)
     glidegridZipAdds = property(_get_glidegridZipAdds, _set_glidegridZipAdds)
 
+#######Gold Parameters [it can be merge with Glide in future !!!! if so remove this bit]
+    _GoldLigAdd = None
+    _GoldRecAdd = None
+    _GoldgridZipAdds = None
+
+    def _get_GoldLigAdd(self):
+        return self._GoldLigAdd
+
+    def _set_GoldLigAdd(self, value):
+        #raise AttributeError("class 'Foo' attribute 'ro' is not writable!")
+	self._GoldLigAdd = value
+
+    def _get_GoldRecAdd(self):
+        return self._GoldRecAdd
+
+    def _set_GoldRecAdd(self, value):
+        #raise AttributeError("class 'Foo' attribute 'ro' is not writable!")
+	self._GoldRecAdd = value
+
+    def _get_GoldgridZipAdds(self):
+        return self._GoldgridZipAdds
+
+    def _set_GoldgridZipAdds(self, value):
+        self._GoldgridZipAdds = value
+
+
+    GoldLigAdd = property(_get_GoldLigAdd, _set_GoldLigAdd)
+    GoldRecAdd = property(_get_GoldRecAdd, _set_GoldRecAdd)
+    GoldgridZipAdds = property(_get_GoldgridZipAdds, _set_GoldgridZipAdds)
 
 class DockParams(object):
     __metaclass__=MetaDockParams

@@ -1,12 +1,19 @@
 from pipeline import *
-from prosci.method.GlideRecPrep import *
 from prosci.method.GridDetector import *
-from prosci.method.GlideLigPrep import *
-from prosci.method.GlideDock import *
 from prosci.method.DockParams import DockParams
 
+#for Glide
+from prosci.method.GlideLigPrep import *
+from prosci.method.GlideRecPrep import *
+from prosci.method.GlideDock import *
 
-#Pipeline(GlideRecPrep(),GlideligPrep()).RunPipeline()
+#for Gold
+from prosci.method.GoldRecPrep import *
+from prosci.method.GoldLigPrep import *
+from prosci.method.GoldDock import *
+
+
+
 class main():
 	
     def __init__(self, REC_ADD, LIG_ADD, COMPLEXNAME, OUTDIR, MODE):
@@ -29,6 +36,7 @@ class main():
 		
 	
 	if run_mode ==1 or self.mode == "Glide":
+		print "***Running Glide ...."
 		#prepare output dir. build here since lig and rest will need it
 		glideoutDir = FileManager().BuildDirectory(self.out_Dir,["Glide",self.complex_Name])
 		glideRecPrepInstance = GlideRecPrep(self.rec_Add,self.lig_Add, glideoutDir,self.gridPoints)
@@ -38,6 +46,11 @@ class main():
 		#Pipeline(glideRecPrepInstance).RunPipeline()
 
 	if run_mode ==1 or self.mode == "Gold":
-		Pipeline(GoldRecPrep()).RunPipeline()
+		print "***Running Gold ....."
+		goldoutDir = FileManager().BuildDirectory(self.out_Dir,["Gold",self.complex_Name])
+		goldRecPrepInstance = GoldRecPrep(self.rec_Add,self.lig_Add, goldoutDir,self.gridPoints)
+		goldLigPrepInstance = GoldLigPrep(self.lig_Add,goldoutDir)
+		goldDockInstance = GoldDock(goldoutDir,self.gridPoints)
+		Pipeline(goldRecPrepInstance,goldLigPrepInstance,goldDockInstance).RunPipeline()
 
 

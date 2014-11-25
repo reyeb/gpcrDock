@@ -23,9 +23,9 @@ class GlideRecPrep(IInterfaceRecPrep):
     def Process(self):
 
 	try:
-		print "Running Glide"
-		self.ArrangeRecInputFormat()
-		self.PrepareRec()
+		print "Prepare Receptor"
+		DockParams.glideRecAdd = self.ArrangeRecInputFormat()
+		DockParams.glidegridZipAdds = self.PrepareRec()
 	except Exception, err:
     		try:
         		exc_info = sys.exc_info()
@@ -49,7 +49,7 @@ class GlideRecPrep(IInterfaceRecPrep):
 		arguments=[mainExecutablePath,"-WAIT","-fix", self.rec_Add, outputRecName]
 		#Command().Process_Command(arguments," ","Preparing Receptror input.")
 		FileManager().Delete_unwanted_dirs_basedon_Names(mainDir = self.ouPutDir , files_to_keep = [outputRecName])
-	DockParams.glideRecAdd = os.path.join(self.ouPutDir, outputRecName)
+	return os.path.join(self.ouPutDir, outputRecName)
 
     def PrepareRec(self):
 	
@@ -84,7 +84,7 @@ RECEP_FILE {2}"""
 
 			index = index+1
 			gridZipAdd.append(os.path.join(ouputpath_grid,gridName+".zip"))
-	DockParams.glidegridZipAdds = gridZipAdd
+	return gridZipAdd
 
 
 
