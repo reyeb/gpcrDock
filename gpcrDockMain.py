@@ -56,5 +56,8 @@ else:
 	#model=SideChain_Torsion_Calculator(model_decoy_address)
 
 #EC_ADD, LIG_ADD, COMPLEXNAME, OUTDIR, MODE)
+import time
+start_time = time.time()
 main(receptor_address,ligand_address,complexname,ouput_dir,args.mode).Run_Dock()
+print("--- %s seconds ---" % str(time.time() - start_time))
 

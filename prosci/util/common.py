@@ -1,5 +1,5 @@
 """a class for storing public functionalities"""
-import os
+import os, re
 from prosci.util.cd import *
 
 
@@ -34,7 +34,7 @@ class FileManager():
 		for file_name in allfiles:	
 			if file_name not in files_to_keep:
 				print "deleting",file_name
-				os.remove(file_name)
+				#os.remove(file_name)
 
     def Delete_unwanted_dirs_basedon_Extention(self,fileExtention_to_keep = None, mainDir = ""):
 	"""Takes as input a directory address. Looks into the directory and the files which their names have extention fileExtention_to_keep are kept"""
@@ -44,4 +44,15 @@ class FileManager():
 		for file_name in allfiles:
 			if  not file_name.endswith(fileExtention_to_keep):
 				print "deleting",file_name
-				os.remove(file_name)
+				#os.remove(file_name)
+			
+    def Delete_unwantedfiles_by_pattern(self,mainDir, pattern=""):
+    	"""Deletes files which match the pattern in a directory """
+    	
+    	with cd (mainDir): 
+		allfiles = [filen for filen in os.listdir(mainDir) if os.path.isfile(os.path.join(mainDir, filen))]
+   	 	for f in allfiles:
+   	 		
+    			if re.search(pattern, f):
+    				print "deleting",f
+    				os.remove(os.path.join(mainDir, f))

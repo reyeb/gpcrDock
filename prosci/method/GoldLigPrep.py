@@ -21,11 +21,14 @@ class GoldLigPrep(IInterfaceLigPrep):
 	try:
 		#if not self.lig_Add.endswith("mae"):
 		print "prepare ligand"
-		formated_ligand = self.ArrangeLigInputFormat(self.lig_Add,"pdb","mae")
-		prepered_glide_lig_add = self.PrepareLig(formated_ligand)
-		#print "prepered_glide_lig_add",prepered_glide_lig_add
+		if DockParams.glideLigAdd is not None and os.path.exists(DockParams.glideLigAdd):
+			prepered_glide_lig_add = DockParams.glideLigAdd
+		else:
+			formated_ligand = self.ArrangeLigInputFormat(self.lig_Add,"pdb","mae")
+			prepered_glide_lig_add = self.PrepareLig(formated_ligand)
+
 		DockParams.GoldLigAdd = self.ArrangeLigInputFormat(prepered_glide_lig_add ,"mae","mol2")
-		#print "DockParams.GoldLigAdd",DockParams.GoldLigAdd
+
 	except  Exception,err:
 		raise Exception('failed to process ligand',str(err))
 
