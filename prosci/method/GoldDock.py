@@ -42,14 +42,14 @@ class GoldDock(IInterfaceDock):
 		#print ouputpath_grid
 		if not os.path.exists(ouputpath_grid):
 			os.mkdir(ouputpath_grid)
-		cur_goldcommand = command_str.format(center_str, DockParams.GoldLigAdd, "10", ouputpath_grid,output_Docked_models,"goldscore","plp", DockParams.GoldRecAdd)
+		cur_goldcommand = command_str.format(center_str, DockParams.GoldLigAdd, "10", ouputpath_grid,output_Docked_models,"goldscore", DockParams.GoldRecAdd)
 		
 		new_conf_file_path= os.path.join(ouputpath_grid, "conf_grid"+str(index+1)+".conf")
    		with cd (ouputpath_grid): 
 			with open (new_conf_file_path,"w") as f:
 				f.write(cur_goldcommand)
 			arguments=[self.Program_path,new_conf_file_path]
-			#Command().Process_Command(arguments," ", "Dock Gold for "+gridName)
+			Command().Process_Command(arguments," ", "Dock Gold for "+gridName)
 			FileManager().Delete_unwantedfiles_by_pattern(ouputpath_grid, pattern="ranked_.+\.sdf")
 
 

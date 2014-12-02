@@ -46,7 +46,7 @@ class GoldRecPrep(IInterfaceRecPrep):
 		pass
 	else:	
 		#re_run and save in the glide folder
-		glideRecPrepInstance = GlideRecPrep(self.rec_Add,self.lig_Add, glideoutDir,self.gridPoints)
+		glideRecPrepInstance = GlideRecPrep(self.rec_Add,self.lig_Add, self.ouPutDir,self.gridPoints)
 		DockParams.glideRecAdd = glideRecPrepInstance.ArrangeRecInputFormat()
 		
 	DockParams.GoldRecAdd = self.ChangeFormattoMol2()
