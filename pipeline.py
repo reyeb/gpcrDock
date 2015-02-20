@@ -10,6 +10,7 @@ class Pipeline(object):
 
     def RunPipeline(self):
 	
+	print "in pipeline"
 	self._recPrep.Process()
 	
 	##commend for this part
