@@ -47,7 +47,7 @@ class GlideRecPrep(IInterfaceRecPrep):
 	# outside the context manager we are back wherever we started.
 	with cd (self.ouPutDir): 
 		arguments=[mainExecutablePath,"-WAIT","-fix", self.rec_Add, outputRecName]
-		Command().Process_Command(arguments," ","Preparing Receptror input.")
+		#Command().Process_Command(arguments," ","Preparing Receptror input.")
 		###not delet anything
 		#FileManager().Delete_unwanted_dirs_basedon_Names(mainDir = self.ouPutDir , files_to_keep = [outputRecName])
 	return os.path.join(self.ouPutDir, outputRecName)
@@ -66,6 +66,7 @@ GRID_CENTER {0}
 OUTERBOX 30.000000, 30.000000, 30.000000
 GRIDFILE {1}.zip
 RECEP_FILE {2}"""
+
 	mainExecutablePath = os.path.join(self.Program_path,"glide")
 	index=1
 	gridZipAdd = []
@@ -81,7 +82,7 @@ RECEP_FILE {2}"""
 			with open (gridName+".in", "w") as f:
 				f.write(cur_gridcommand)
 			arguments=[mainExecutablePath,"-WAIT", gridName+".in"]
-			Command().Process_Command(arguments," ","Preparing grid point "+str(index))
+			#Command().Process_Command(arguments," ","Preparing grid point "+str(index))
 
 			index = index+1
 			gridZipAdd.append(os.path.join(ouputpath_grid,gridName+".zip"))

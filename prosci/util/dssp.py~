@@ -1,0 +1,377 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# DSSP output parser
+# by Sebastian Kelm, 2014
+#
+# Losely based on the DSSP parsing code found here: http://openwetware.org/wiki/Wilke:ParseDSSP
+# and adapted to fit into Sebastian Kelm's prosci.util library.
+#
+
+
+import sys
+import os
+import shutil
+import tempfile
+import subprocess
+
+from prosci.util.ali import Ali
+from prosci.util.protein import Protein, ResidueList
+
+# Taken from:
+# http://prowl.rockefeller.edu/aainfo/volume.htm
+# C. Chotia, The Nature of the Accessible and Buried Surfaces in Proteins, J. Mol. Biol., 105(1975)1-14
+# Residue volume in Gly-X-Gly
+"""
+  A 115
+  C 135
+  D 150
+  E 190
+  F 210
+  G 75
+  H 195
+  I 175
+  K 200
+  L 170
+  M 185
+  N 160
+  P 145
+  Q 180
+  R 225
+  S 115
+  T 140
+  V 155
+  W 255
+  Y 230
+"""
+
+# Taken from:
+# http://peds.oxfordjournals.org/content/15/8/659.full.pdf
+# Residue volume in Gly-X-Gly
+"""
+  A 116
+  C 141
+  D 155
+  E 187
+  F 223
+  G 84
+  H 199
+  I 190
+  K 207
+  L 198
+  M 211
+  N 168
+  P 145
+  Q 189
+  R 249
+  S 126
+  T 148
+  V 162
+  W 265
+  Y 238
+"""
+
+# Taken from:
+# http://peds.oxfordjournals.org/content/15/8/659.full.pdf
+# Residue volume in Ala-X-Ala
+"""
+  A 103
+  C 128
+  D 142
+  E 173
+  F 210
+  G 70
+  H 185
+  I 176
+  K 194
+  L 184
+  M 197
+  N 155
+  P 127
+  Q 175
+  R 235
+  S 112
+  T 134
+  V 149
+  W 252
+  Y 225
+"""
+  
+RESIDUE_SURFACE = {}
+for line in """
+  A 115
+  C 135
+  D 150
+  E 190
+  F 210
+  G 75
+  H 195
+  I 175
+  K 200
+  L 170
+  M 185
+  N 160
+  P 145
+  Q 180
+  R 225
+  S 115
+  T 140
+  V 155
+  W 255
+  Y 230
+  """.strip().splitlines():
+    res, surface = line.split()
+    RESIDUE_SURFACE[res] = float(surface)
+
+
+ACCESSIBILITY_CUTOFF = 0.09 # this is a percentage of a residue's surface
+
+
+def annotate_single_chain(struc):
+  "Generate an Ali object containing the annotation for the given structure, treated as a single chain"
+  annotator = DSSPAnnotator(struc)
+  annot = annotator.get_annotation_strings()
+  
+  a = ">%s\n%s\n%s*\n" % (struc.code, "sequence", annotator.struc.get_seq())
+  for k in annot:
+    a += ">%s\n%s\n%s*\n" % (struc.code, k, annot[k])
+  
+  return Ali(a)
+
+
+def annotate_protein(struc):
+  if not isinstance(struc, Protein):
+    struc = Protein(struc)
+  
+  annot = annotate_single_chain(struc)
+  
+  seq = annot[0].master.seq
+  try:
+    protein_indices = struc.map_to_seq(seq)
+  except:
+    print "Structure:"
+    print struc.get_seq()
+    print "Annotation:"
+    print annot
+    raise
+  
+  output = []
+  for chain, chain_indices in zip(struc, protein_indices):
+    a = annot.copy_columns(chain_indices)
+    a[0].code = struc.code + chain.chain
+    output.append(a[0])
+  
+  return Ali(output)
+
+
+
+class DSSPAnnotator(object):
+  "Annotates a protein structure with DSSP"
+  
+  
+  def __init__(self, struc):
+    if not isinstance(struc, ResidueList):
+      if isinstance(struc, Protein):
+        struc = struc.to_residuelist()
+      else:
+        struc = ResidueList(struc)
+    self.struc = struc
+    self.data = self._annotate()
+  
+  
+  def _annotate(self):
+    strucfname = "struc.pdb"
+    tmpdir = tempfile.mkdtemp()
+    try:
+      f = open(os.path.join(tmpdir, strucfname), "w")
+      f.write(str(self.struc))
+      f.close()
+      
+      p = subprocess.Popen(["dssp", strucfname], cwd=tmpdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+      out, err = p.communicate()
+      
+      data = DSSPData(out)
+      
+      if err.strip():
+        sys.stderr.write("DSSP errors:\n%s\n\n" % (err))
+    finally:
+      shutil.rmtree(tmpdir)
+    
+    return data  
+  
+  
+  def get_secondary_structure_string(self):
+    """
+    B = residue in isolated beta-bridge
+    E = extended strand, in beta-ladder
+    G = 3-helix (3/10 helix)
+    H = alpha-helix
+    I = 5-helix (pi helix)
+    T = hydrogen bonded turn
+    S = bend
+    """
+    d = self.data
+    struc = self.struc
+    
+    n = 0
+    output = ""
+    for i, (ires, inscode, chain, aa, sec_struc) in enumerate(zip(d.resnum, d.inscode, d.chain, d.aa, d.struct)):
+      if aa == "!*":
+        continue
+      S = sec_struc[0]
+      res = self.struc[n]
+      assert res.ires == int(ires)
+      assert res.inscode == inscode
+      assert res.chain == chain
+      output += S
+      n += 1
+    
+    assert len(output) == len(struc)
+    return output
+  
+  
+  def get_annotation_strings(self):
+    d = self.data
+    struc = self.struc
+    
+    n = 0
+    sstruc = ""
+    access = ""
+    for i, (ires, inscode, chain, aa, sec_struc, acc) in enumerate(zip(d.resnum, d.inscode, d.chain, d.aa, d.struct, d.acc)):
+      if "!" in aa:
+        continue
+      S = sec_struc[0]
+      res = self.struc[n]
+      n += 1
+      
+      #assert str(res.ires) == ires, "'%d' != '%s', '%s', '%s', '%s', '%s', '%s'"%(res.ires, ires, inscode, chain, aa, sec_struc, acc)
+      #assert res.inscode == inscode, "%s %s %s %s %s %s"%(ires, inscode, chain, aa, sec_struc, acc)
+      #assert res.chain == chain, "%s %s %s %s %s %s"%(ires, inscode, chain, aa, sec_struc, acc)
+      
+      while not (str(res.ires) == ires and res.inscode == inscode and res.chain == chain):
+        # We have a residue that DSSP did not annotate. Generate default annotation until we reach annotated residues again.
+        #
+        sstruc += "C"
+        access += "T"
+        res = self.struc[n]
+        n += 1
+      
+      sstruc += S
+      
+      isacc = "T"
+      try:
+        acc = float(acc) / RESIDUE_SURFACE[aa]
+        if acc < ACCESSIBILITY_CUTOFF:
+          isacc = "F"
+      except KeyError:
+        pass
+      access += isacc
+    
+    while len(sstruc) < len(struc):
+      sstruc += "C"
+    while len(access) < len(struc):
+      access += "T"
+    
+    assert len(sstruc) == len(struc), "sstruc=%s struc=%s" % (len(sstruc), len(struc))
+    assert len(access) == len(struc), "access=%s struc=%s" % (len(access), len(struc))
+    
+    simplestruc = []
+    for x in sstruc:
+      if x in "HGI":
+        simplestruc += "H"
+      elif x in "E":
+        simplestruc += "E"
+      else:
+        simplestruc += "C"
+    simplestruc = "".join(simplestruc)
+    
+    return {"DSSP":sstruc.replace(" ", "C"), "surface accessibility":access, "secondary structure":simplestruc}
+  
+  
+
+
+################################################################################
+# DSSP OUTPUT PARSER
+#
+# The below code was adapted from http://openwetware.org/wiki/Wilke:ParseDSSP
+# and modified by Sebastian Kelm, 7 March 2014.
+################################################################################
+
+class DSSPData(object):
+  def __init__(self, txt):
+    self.num    = []
+    self.resnum = []
+    self.inscode= []
+    self.chain  = []
+    
+    self.aa     = []
+    
+    self.struct = []
+    
+    self.bp1    = []
+    self.bp2    = []
+    self.blabel = []
+    
+    self.acc    = []
+    
+    self.h_nho1 = []
+    self.h_ohn1 = []
+    self.h_nho2 = []
+    self.h_ohn2 = []
+    
+    self.tco    = []
+    self.kappa  = []
+    self.alpha  = []
+    self.phi    = []
+    self.psi    = []
+    self.xca    = []
+    self.yca    = []
+    self.zca    = []
+    
+    line_num = 0
+    start=False
+    for line in txt.splitlines():
+      if '#' in line:
+        start=True
+        continue
+      if start:
+        self.num.append(    int(line[0:5].strip()) )
+        self.resnum.append( line[5:10].strip() )
+        self.inscode.append(line[10:11].strip() )
+        self.chain.append(  line[11:12].strip() )
+        
+        self.aa.append(     line[13:15].strip() )
+        
+        self.struct.append( line[16:25] )
+        
+        self.bp1.append(    line[25:29].strip() )
+        self.bp2.append(    line[29:33].strip() )
+        self.blabel.append( line[33:34].strip() )
+        
+        self.acc.append(    line[34:38].strip() )
+        
+        self.h_nho1.append( line[38:50].strip() )
+        self.h_ohn1.append( line[50:61].strip() )
+        self.h_nho2.append( line[61:72].strip() )
+        self.h_ohn2.append( line[72:83].strip() )
+        
+        self.tco.append(    line[83:91].strip() )
+        self.kappa.append(  line[91:97].strip() )
+        self.alpha.append(  line[97:103].strip() )
+        self.phi.append(    line[103:109].strip() )
+        self.psi.append(    line[109:115].strip() )
+        self.xca.append(    line[115:122].strip() )
+        self.yca.append(    line[122:129].strip() )
+        self.zca.append(    line[129:136].strip() )
+    
+
+
+
+if __name__ == "__main__":
+  from glob import glob
+  
+  for fname in glob("*.pdb"):
+    p = Protein(fname)
+    print annotate_single_chain(p)
+    #print annotate_protein(p)
+  

@@ -22,9 +22,10 @@ class main():
 	self.complex_Name = COMPLEXNAME
 	self.out_Dir = OUTDIR
 	self.mode = MODE
+	
 	#Let's have grid point as a list since in future we might have more of a pocket detection which will be added here
 	self.gridPoints = GridDetector(LIG_ADD).BuildGridUsingLigandPositionAverage()
-
+	
 	
     def Run_Dock(self):
 		

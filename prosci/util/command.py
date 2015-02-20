@@ -20,6 +20,7 @@ class Command():
 		
 		if errors:
 			raise Exception('Something went wrong while running, error is: %s , Output is: %s ' % (errors,output))
+		return output
 			
   	except:
         	raise Exception('The command failed to run in directory %s  : error is: %s , Output is: %s , command: %s' % (os.getcwd(),errors,output,commandLine))

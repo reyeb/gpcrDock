@@ -34,7 +34,7 @@ class GlideLigPrep(IInterfaceLigPrep):
 	outputFile = os.path.join(self.ouPutDir,outputLigName)
 	with cd (self.ouPutDir): 
 		arguments=[mainExecutablePath,"-ipdb", self.lig_Add , "-omae", outputLigName]
-		Command().Process_Command(arguments," ", "Converting ligand format to mae.")
+		#Command().Process_Command(arguments," ", "Converting ligand format to mae.")
 	return outputFile
 
 
@@ -45,8 +45,8 @@ class GlideLigPrep(IInterfaceLigPrep):
 	outputLigName = FileManager().changeExtention(os.path.basename(self.lig_Add),"_Prep.mae")
 	outputFile = os.path.join(self.ouPutDir,outputLigName)
 	with cd (self.ouPutDir): 
-		arguments=[mainExecutablePath,"-WAIT -W e,-ph,7.0,-pht,2.0 -epik -s 1 -i 1 -r 1 -nz -bff 14 -ac",  "-imae", ligmaeFormat, "-omae", outputLigName]
-		Command().Process_Command(arguments," ", "Preparing Ligand input.")
+		arguments=[mainExecutablePath,"-WAIT -W e,-ph,7.0,-pht,2.0 -epik -s 1 -i 0 -r 1 -nz -bff 14 -g",  "-imae", ligmaeFormat, "-omae", outputLigName]
+		#Command().Process_Command(arguments," ", "Preparing Ligand input.")
 		###not delet anything
 		#FileManager().Delete_unwanted_dirs_basedon_Extention (fileExtention_to_keep = "_Prep.mae" , mainDir =self.ouPutDir )
 	return outputFile

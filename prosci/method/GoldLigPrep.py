@@ -24,9 +24,14 @@ class GoldLigPrep(IInterfaceLigPrep):
 		if DockParams.glideLigAdd is not None and os.path.exists(DockParams.glideLigAdd):
 			prepered_glide_lig_add = DockParams.glideLigAdd
 		else:
-			formated_ligand = self.ArrangeLigInputFormat(self.lig_Add,"pdb","mae")
-			prepered_glide_lig_add = self.PrepareLig(formated_ligand)
-
+			#in Normal cases the line below should be uncomment and the /*** section should be deleted
+			#formated_ligand = self.ArrangeLigInputFormat(self.lig_Add,"pdb","mae")
+			#prepered_glide_lig_add = self.PrepareLig(formated_ligand)
+			#/*************************
+			outputLigName = FileManager().changeExtention(os.path.basename(self.lig_Add),"."+"mae")
+			prepered_glide_lig_add_1 = self.PrepareLig(formated_ligand)
+			prepered_glide_lig_add=prepered_glide_lig_add_1.replace("Gold","Glide")
+			#/*************************
 		DockParams.GoldLigAdd = self.ArrangeLigInputFormat(prepered_glide_lig_add ,"mae","mol2")
 
 	except  Exception,err:
@@ -61,8 +66,8 @@ class GoldLigPrep(IInterfaceLigPrep):
 		return outputFile
 	
 	with cd (self.ouPutDir): 
-		arguments=[mainExecutablePath,"-WAIT -W e,-ph,7.0,-pht,2.0 -epik -s 1 -i 1 -r 1 -nz -bff 14 -ac",  "-imae", ligmaeFormat, "-omae", outputLigName]
-		Command().Process_Command(arguments," ", "Preparing Ligand input.")
-		FileManager().Delete_unwanted_dirs_basedon_Extention (fileExtention_to_keep = "_Prep.mae" , mainDir =self.ouPutDir )
+		arguments=[mainExecutablePath,"-WAIT -W e,-ph,7.0,-pht,2.0 -epik -s 1 -i 0 -r 1 -nz -bff 14 -g",  "-imae", ligmaeFormat, "-omae", outputLigName]
+		#Command().Process_Command(arguments," ", "Preparing Ligand input.")
+		
 	return outputFile
 

@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import heapq
+import itertools
+
+
+class HeapQueue(object):
+  def __init__(self, data=(), maxitems=0):
+    self.data = []
+    self.maxitems = maxitems
+    for x in data:
+      self.push(x)
+  
+  def push(self, x):
+    if self.maxitems and (len(self.data) >= self.maxitems):
+      heapq.heappushpop(self.data, x)
+    else:
+      heapq.heappush(self.data, x)
+  
+  def pop(self):
+    return heapq.heappop(self.data)
+  
+  def replace(self, x):
+    return heapq.heapreplace(self.data, x)
+  
+  def pushpop(self, x):
+    return heapq.heappushpop(self.data, x)
+  
+  def __iter__(self):
+    return self.data.__iter__()
+  
+  def __repr__(self):
+    return "<HeapQueue(%s)>" % (repr(self.data))
+  
+  def __len__(self):
+    return len(self.data)
+  
+  def __nonzero__(self):
+    return bool(self.data)
+
+
+class PriorityQueue(object):
+  def __init__(self, data=(), maxitems=0, key=lambda x:x):
+    "Create a PriorityQueue. All items must be hashable."
+    self.data = []
+    self.maxitems = maxitems
+    self.key = key
+    self.counter = itertools.count()
+    self.entry_finder = {}
+    self.REMOVED = None
+    self.length = 0
+    for x in data:
+      self.push(x)
+  
+  def push(self, item):
+    "Add an item. If maxitems is set, this might result in an item being removed as well."
+    if self.maxitems and (self.length >= self.maxitems):
+      return self.pushpop(item)
+    else:
+      entry = [self.key(item), next(self.counter), item]
+      heapq.heappush(self.data, entry)
+      self.length += 1
+      self.entry_finder[item] = entry
+  
+  def peak(self):
+    "Get the smallest item without removing it."
+    while True:
+      item = self.data[0][-1]
+      if self.REMOVED != item:
+        return item
+      heapq.heappop(self.data)
+  
+  def pop(self):
+    "Remove the smallest item."
+    while True:
+      olditem = heapq.heappop(self.data)[-1]
+      if self.REMOVED != olditem:
+        self.entry_finder.pop(olditem)
+        self.length -= 1
+        return olditem
+  
+  def replace(self, item):
+    "Remove the smallest item, then add an item."
+    entry = [self.key(item), next(self.counter), item]
+    while True:
+      olditem = heapq.heapreplace(self.data, entry)[-1]
+      if self.REMOVED != olditem:
+        self.remove(olditem)
+        self.entry_finder[item] = entry
+        return olditem
+  
+  def pushpop(self, item):
+    "Add an item, then remove the smallest item."
+    entry = [self.key(item), next(self.counter), item]
+    while True:
+      olditem = heapq.heappushpop(self.data, entry)[-1]
+      if self.REMOVED != olditem:
+        self.remove(olditem)
+        self.entry_finder[item] = entry
+        return olditem
+  
+  def remove(self, item):
+    "Mark an existing item as REMOVED."
+    try:
+      entry = self.entry_finder.pop(item)
+    except KeyError, e:
+      raise IndexError(str(e))
+    entry[-1] = self.REMOVED
+    self.length -= 1
+  
+  def __repr__(self):
+    return "<PriorityQueue(%s)>" % (repr(self.data))
+  
+  def __len__(self):
+    return self.length
+  
+  def __nonzero__(self):
+    return bool(self.length)
