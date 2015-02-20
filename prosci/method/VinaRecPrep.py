@@ -47,7 +47,7 @@ class VinaRecPrep(IInterfaceRecPrep):
 		print self.ouPutDir
 		arguments=["python",mainExecutablePath,"-r", self.rec_Add, "-o",outputRecName,"-A","checkhydrogens"]
 		commandLine=" ".join(arguments)
-		print commandLine
+		os.system(commandLine)
 	DockParams.VinaRecAdd=os.path.join(self.ouPutDir, outputRecName)
 
     def ArrangeRecInputFormat(self):
