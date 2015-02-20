@@ -65,5 +65,34 @@ class MetaDockParams(type):
     GoldRecAdd = property(_get_GoldRecAdd, _set_GoldRecAdd)
     GoldgridZipAdds = property(_get_GoldgridZipAdds, _set_GoldgridZipAdds)
 
+#######Vina Parameters 
+    _VinaLigAdd = None
+    _VinaRecAdd = None
+    _VinagridZipAdds = None
+
+    def _get_VinaLigAdd(self):
+        return self._VinaLigAdd
+
+    def _set_VinaLigAdd(self, value):
+        #raise AttributeError("class 'Foo' attribute 'ro' is not writable!")
+	self._VinaLigAdd = value
+
+    def _get_VinaRecAdd(self):
+        return self._VinaRecAdd
+
+    def _set_VinaRecAdd(self, value):
+        #raise AttributeError("class 'Foo' attribute 'ro' is not writable!")
+	self._VinaRecAdd = value
+
+    def _get_VinagridZipAdds(self):
+        return self._VinagridZipAdds
+
+    def _set_VinagridZipAdds(self, value):
+        self._VinagridZipAdds = value
+
+
+    VinaLigAdd = property(_get_VinaLigAdd, _set_VinaLigAdd)
+    VinaRecAdd = property(_get_VinaRecAdd, _set_VinaRecAdd)
+    VinagridZipAdds = property(_get_VinagridZipAdds, _set_VinagridZipAdds)
 class DockParams(object):
     __metaclass__=MetaDockParams

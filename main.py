@@ -12,7 +12,7 @@ from prosci.method.GoldRecPrep import *
 from prosci.method.GoldLigPrep import *
 from prosci.method.GoldDock import *
 
-
+#for Vina
 
 class main():
 	
@@ -54,4 +54,10 @@ class main():
 		goldDockInstance = GoldDock(goldoutDir,self.gridPoints)
 		Pipeline(goldRecPrepInstance,goldLigPrepInstance,goldDockInstance).RunPipeline()
 
-
+	if run_mode ==1 or self.mode == "Vina":
+		print "***Running Vina ....."
+		goldoutDir = FileManager().BuildDirectory(self.out_Dir,["Vina",self.complex_Name])
+		vinaRecPrepInstance = VinaRecPrep(self.rec_Add,self.lig_Add, vinaoutDir,self.gridPoints)
+		#goldLigPrepInstance = GoldLigPrep(self.lig_Add,goldoutDir)
+		#goldDockInstance = GoldDock(goldoutDir,self.gridPoints)
+		#Pipeline(goldRecPrepInstance,goldLigPrepInstance,goldDockInstance).RunPipeline()
